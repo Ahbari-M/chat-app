@@ -38,8 +38,18 @@ async function getAll() {
   return users.map(user => ({userName: user.userName}))
 }
 
+async function getUser(userName) { 
+  const user = users.find(u => u.userName === data.userName)
+  
+  if (!user) {
+    throw 'user not found'
+  }
+  return {userName}
+}
+
 export default {
   signup,
   signin,
-  getAll
+  getAll,
+  getUser
 }

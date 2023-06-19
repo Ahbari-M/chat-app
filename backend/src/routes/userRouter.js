@@ -21,7 +21,7 @@ router.put('/signin', async (req, res, next) => {
   try {
       const signInData = req.body;
       const user = await userService.signin(signInData);  
-      const token = jwt.sign({ id: user.userName}, config.secret, { expiresIn: 86400 });
+      const token = jwt.sign({ userName: user.userName}, config.secret, { expiresIn: 86400 });
       res.status(OK)
       .json({
         user,
@@ -37,6 +37,17 @@ router.get('/all', async (req, res, next) => {
   try {
     const users = await userService.getAll()
     return res.json(users)
+  } catch (error) {
+    next(error)
+  }
+})
+
+router.get('/account', async (req, res, next) => {
+  try {
+    const { userName } = jwt.verify(req.headers.authorization);
+    
+    const user = await userService.getUser(userName)
+    return res.json({user})
   } catch (error) {
     next(error)
   }
