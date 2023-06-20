@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { verify } from 'jsonwebtoken';
 import StatusCodes from 'http-status-codes';
 import userService from '../services/userService.js';
 import config from '../config.js'
+import { verifyToken } from '../shared/jwt.js';
 
 const router = Router()
 const { CREATED, OK } = StatusCodes;
@@ -44,8 +45,8 @@ router.get('/all', async (req, res, next) => {
 
 router.get('/account', async (req, res, next) => {
   try {
-    const { userName } = jwt.verify(req.headers.authorization);
-    
+    const auth = req.headers.authorization
+    const userName  = verifyToken(auth);
     const user = await userService.getUser(userName)
     return res.json({user})
   } catch (error) {
