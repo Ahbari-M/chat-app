@@ -39,7 +39,7 @@ async function getAll() {
 }
 
 async function getUser(userName) { 
-  const user = users.find(u => u.userName === data.userName)
+  const user = users.find(u => u.userName === userName)
   
   if (!user) {
     throw 'user not found'
