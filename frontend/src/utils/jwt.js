@@ -11,3 +11,7 @@ export const setSession = (accessToken) => {
   }
 };
 
+export const getAuthToken = () => {
+  return localStorage.getItem('accessToken');
+}
+
