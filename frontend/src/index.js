@@ -5,6 +5,7 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ThemeCustomization from './theme';
 import { AuthProvider } from './contexts/AuthContext';
+import { SocketProvider } from './contexts/SocketContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -12,9 +13,11 @@ root.render(
     <BrowserRouter>
       <ThemeCustomization>
         <AuthProvider>
-          <Routes>
-            <Route path='/*' element={<App />} />
-          </Routes>
+          <SocketProvider>
+            <Routes>
+              <Route path='/*' element={<App />} />
+            </Routes>
+          </SocketProvider>
         </AuthProvider>
       </ThemeCustomization>
     </BrowserRouter>
