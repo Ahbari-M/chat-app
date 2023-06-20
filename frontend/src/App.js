@@ -1,6 +1,3 @@
-import { Card, Container } from "@mui/material";
-import ChatSidebar from "./components/ChatSidebar";
-import ChatWindow from "./components/ChatWindow";
 import { Route, Routes } from "react-router-dom";
 import Chat from "./pages/Chat";
 import SignIn from "./pages/Signin";
