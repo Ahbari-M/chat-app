@@ -1,46 +1,61 @@
-import { Autocomplete, Avatar, Box, Chip, TextField, alpha } from '@mui/material';
+import { Autocomplete, Avatar, Box, Chip, Stack, TextField, Typography, alpha } from '@mui/material';
 import React, { useState } from 'react'
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import parse from 'autosuggest-highlight/parse';
+import match from 'autosuggest-highlight/match';
 
-function ChatHeader({contacts, recipients, onAddRecipients}) {
+function ChatHeader({contacts, members=[], onAddMembers}) {
   const [query, setQuery] = useState('');
 
-  const handleAddRecipients = (recipients) => {
+  const handleAddMembers = (members) => {
     setQuery('');
-    // onAddRecipients(recipients);
+    onAddMembers(members);
   };
   return (
-    <Box s={{
-      display: 'flex',
+    <Stack
+      spacing={2}
+      direction={'row'}
+      sx={{
       alignItems: 'center',
-      padding: 4,
+      padding: 3,
     }} >
+      <Typography component={'span'} variant='h5'>start new chat</Typography>
         <Autocomplete
           multiple
           size="small"
+          sx={{ minWidth: 200 }}
           disablePortal
           popupIcon={null}
-          // noOptionsText={<SearchNotFound searchQuery={query} />}
-          onChange={(event, value) => handleAddRecipients(value)}
+          noOptionsText={'no results'}
+          onChange={(event, value) => handleAddMembers(value)}
           onInputChange={(event, value) => setQuery(value)}
           options={contacts}
-          getOptionLabel={(recipient) => recipient.name}
-          renderOption={(props, recipient, { inputValue, selected }) => {
-            const { name, avatar } = recipient;
-            const matches = name === inputValue;
-            // const parts = parse(name, matches);
+          getOptionLabel={(member) => member}
+          renderOption={(props, member, { inputValue, selected }) => {
+            const  avatar  = member;
+            const matches = match(member, inputValue);
+            const parts = parse(member, matches);
             return (
-              <Box component="li" sx={{ p: '12px !important' }} {...props}>
+              <Box
+                component="li"
+                {...props}
+              >
                 <Box
                   sx={{
                     mr: 1.5,
                     width: 32,
                     height: 32,
-                    overflow: 'hidden',
-                    borderRadius: '50%',
                     position: 'relative',
                   }}
                 >
-                  <Avatar alt={name} src={avatar} />
+                  <Avatar
+                    sx={{
+                      width: 32,
+                      height: 32,
+                    }}
+                    alt={member}
+                    src={avatar}
+                  />
                   <Box
                     sx={{
                       top: 0,
@@ -51,48 +66,41 @@ function ChatHeader({contacts, recipients, onAddRecipients}) {
                       position: 'absolute',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      bgcolor: (theme) => alpha(theme.palette.grey[900], 0.8),
-                      transition: (theme) =>
-                        theme.transitions.create('opacity', {
-                          easing: theme.transitions.easing.easeInOut,
-                          duration: theme.transitions.duration.shorter,
-                        }),
                       ...(selected && {
                         opacity: 1,
                         color: 'primary.main',
                       }),
                     }}
                   >
-                    {/* <Iconify icon="eva:checkmark-fill" width={20} height={20} /> */}
+                    <CheckBoxIcon />
                   </Box>
                 </Box>
 
-                {/* {parts.map((part, index) => (
-                  <Typography key={index} variant="subtitle2" color={part.highlight ? 'primary' : 'textPrimary'}>
+                {parts.map((part, index) => (
+                  <Typography key={index} variant="subtitle2" color={part.highlight ? 'primary' : 'text.primary'}>
                     {part.text}
                   </Typography>
-                ))} */}
+                ))}
               </Box>
             );
           }}
-          renderTags={(recipients, getTagProps) =>
-            recipients.map((recipient, index) => {
-              const { id, name, avatar } = recipient;
+          renderTags={(members, getTagProps) =>
+            members.map((member, index) => {
               return (
                 <Chip
                   {...getTagProps({ index })}
-                  key={id}
+                  key={index}
                   size="small"
-                  label={name}
+                  label={member}
                   color="info"
-                  avatar={<Avatar alt={name} src={avatar} />}
+                  avatar={<Avatar alt={member} src={''} />}
                 />
               );
             })
           }
-          renderInput={(params) => <TextField {...params} placeholder={recipients.length === 0 ? 'Recipients' : ''} />}
+          renderInput={(params) => <TextField {...params} placeholder={members.length === 0 ? 'members' : ''} />}
       />
-      </Box>
+      </Stack>
   )
 }
 
