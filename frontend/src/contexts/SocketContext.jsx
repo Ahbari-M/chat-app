@@ -18,7 +18,10 @@ const getSocket = () => {
   const token = getAuthToken(); // get jwt token from local storage or cookie
   if (token) {
     return io(SOCKET_URL, {
-      auth: { token: `Bearer ${token}` }
+      auth: {
+        token : `Bearer ${token}`
+      },
+      withCredentials: true,
     });
   }
   return io(SOCKET_URL);
@@ -38,7 +41,10 @@ const SocketProvider = ({ children }) => {
     socket.on('online-users', ({ users }) => setOnlineUsers(users));
     socket.on('new-room', (room) => setRooms(prev => [...prev, room]));
     socket.on('chat-message', ({ message, name, room }) => setMsgs(prev => ({ ...prev, room: [...prev[room], { message, name }] })));
-    
+    socket.on("connect_error", (err) => {
+      console.log({err}); // prints the message associated with the error
+    });
+
     return () => {
       socket.off('connect')
       socket.off('online-users')
@@ -48,15 +54,14 @@ const SocketProvider = ({ children }) => {
     };
   }, []);
 
-  useEffect(() => {
-      if (!!getAuthToken() && !socket.connected) {
-        socket.connect()
-      }
-  }, [getAuthToken()]);
 
-
-  const newChat = (users) => {
-    socket.emit('new-chat', users)
+  const newChat = async (users) => {
+    return new Promise((resolve, reject) => {
+      socket.emit('new-chat', users, (newRoom) => {
+        console.log({ newRoom })
+        return resolve(newRoom.id)
+      })
+    }) 
   }
 
   const sendMsg = ({to, message}) => {
