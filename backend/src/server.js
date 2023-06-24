@@ -50,23 +50,34 @@ const USERS = {}
 
 io.use(async (socket, next) => {
     try {
-        const userName = verifyToken(socket.handshake.auth.token); 
-
+        const userName = verifyToken(socket.handshake.auth.token);
         USERS[userName] = {socket, rooms: []};
         socket.broadcast.emit('online-users',{users: Object.keys(USERS)}); 
-        socket.emit('online-users',{users: Object.keys(USERS)}); 
-        console.log(`${userName} has connected `, Object.keys(USERS));
+        console.log(`${userName} has connected `);
         next();
     } catch (error) {
-        // console.log({error})
-        socket.disconnect();
+        console.log({err: error.message})
+        next(new Error("invalid token"));
     }
 })
 
 io.on('connection', socket => {
     const userName = verifyToken(socket.handshake.auth.token);
-    socket.on('new-chat', (chatUsers) => {
-        const room = {id: uuid() , people: [userName,...chatUsers]};
+    socket.emit('online-users', { users: Object.keys(USERS) }); 
+    
+    socket.on('new-chat', (chatUsers, callback) => {
+        let room = {}
+        if (chatUsers.length === 1) {
+            const id = USERS[chatUsers[0]].socket.id;
+            room = {id , people: [userName,...chatUsers]};
+            if (USERS[userName].rooms.findIndex(r => r.id === id) !== -1) {
+                callback(room)
+                return
+            }
+        } else {
+            room = {id: uuid() , people: [userName,...chatUsers]};
+        }
+        console.log('new room has been created by ' + userName)
         socket.join(room.id)
         USERS[userName].rooms.push(room);
         chatUsers.forEach(u => {
@@ -74,8 +85,8 @@ io.on('connection', socket => {
             user.socket.join(room.id)
             user.rooms.push(room)
         });
-        
-        socket.to(room.id).emit('new-room', room )
+        socket.to(room.id).emit('new-room', room)
+        callback(room)
     })
 
     socket.on('send-chat-message', ({room, message}) => {
@@ -98,7 +109,7 @@ io.on('connection', socket => {
 })
 
 io.engine.on("connection_error", (err) => {
-    console.log(err.req);      // the request object
+    // console.log(err.req);      // the request object
     console.log(err.code);     // the error code, for example 1
     console.log(err.message);  // the error message, for example "Session ID unknown"
     console.log(err.context);  // some additional error context
