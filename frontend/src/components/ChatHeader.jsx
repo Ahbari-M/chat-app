@@ -1,16 +1,20 @@
-import { Autocomplete, Avatar, Box, Chip, Stack, TextField, Typography, alpha } from '@mui/material';
+import { Autocomplete, Avatar, Box, Button, Chip, Stack, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react'
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import parse from 'autosuggest-highlight/parse';
 import match from 'autosuggest-highlight/match';
+import useSocket from '../hooks/useSocket';
+import { useNavigate } from 'react-router-dom';
 
-function ChatHeader({contacts, members=[], onAddMembers}) {
-  const [query, setQuery] = useState('');
+function ChatHeader() {
+  const [members, setChatMembers] = useState([]) 
+  const { onlineUsers, newChat, rooms } = useSocket();
+  const navigate = useNavigate()
 
   const handleAddMembers = (members) => {
-    setQuery('');
-    onAddMembers(members);
+    setChatMembers(members);
   };
+
   return (
     <Stack
       spacing={2}
@@ -28,8 +32,7 @@ function ChatHeader({contacts, members=[], onAddMembers}) {
           popupIcon={null}
           noOptionsText={'no results'}
           onChange={(event, value) => handleAddMembers(value)}
-          onInputChange={(event, value) => setQuery(value)}
-          options={contacts}
+          options={onlineUsers}
           getOptionLabel={(member) => member}
           renderOption={(props, member, { inputValue, selected }) => {
             const  avatar  = member;
@@ -100,6 +103,13 @@ function ChatHeader({contacts, members=[], onAddMembers}) {
           }
           renderInput={(params) => <TextField {...params} placeholder={members.length === 0 ? 'members' : ''} />}
       />
+
+      <Button variant='contained' onClick={async() => {
+        const chatid = await newChat(members)
+        navigate('/chat/'+chatid)
+      }}>
+        create chat
+      </Button>
       </Stack>
   )
 }

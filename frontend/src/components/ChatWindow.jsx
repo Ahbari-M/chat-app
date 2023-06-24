@@ -15,7 +15,7 @@ export default function ChatWindow() {
   return (
     <Stack sx={{ flexGrow: 1, minWidth: '1px' }}>
         
-      <ChatHeader contacts={onlineUsers} recipients={chatMembers} onAddRecipients={(users) => setChatMembers(users) } />
+      <ChatHeader />
 
       <Divider />
 
