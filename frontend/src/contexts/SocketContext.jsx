@@ -56,9 +56,9 @@ const SocketProvider = ({ children }) => {
 
 
   const newChat = async (users) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       socket.emit('new-chat', users, (newRoom) => {
-        console.log({ newRoom })
+        setRooms(prev => [...prev, newRoom])
         return resolve(newRoom.id)
       })
     }) 
