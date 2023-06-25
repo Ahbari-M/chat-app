@@ -1,44 +1,12 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 // @mui
-import { useTheme, styled } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import { Box, Stack, Drawer, IconButton, useMediaQuery, Avatar } from '@mui/material';
-// redux
-// import { useSelector } from '../../../redux/store';
-// // hooks
-// import useResponsive from '../../../hooks/useResponsive';
-// // utils
-// import axios from '../../../utils/axios';
-// // routes
-// import { PATH_DASHBOARD } from '../../../routes/paths';
-// // components
-// import Iconify from '../../../components/Iconify';
-// import Scrollbar from '../../../components/Scrollbar';
-// //
-// import ChatAccount from './ChatAccount';
-// import ChatSearchResults from './ChatSearchResults';
-// import ChatContactSearch from './ChatContactSearch';
-// import ChatConversationList from './ChatConversationList';
+import { ConversationsMenu } from './ConversationsMenu';
 
-// ----------------------------------------------------------------------
+
 const SIDEBAR_WIDTH = 320;
-const SIDEBAR_COLLAPSE_WIDTH = 96;
-
-const ToggleButtonStyle = styled((props) => <IconButton disableRipple {...props} />)(({ theme }) => ({
-  left: 0,
-  zIndex: 9,
-  width: 32,
-  height: 32,
-  position: 'absolute',
-  top: theme.spacing(13),
-  borderRadius: `0 12px 12px 0`,
-  color: theme.palette.primary.contrastText,
-  backgroundColor: theme.palette.primary.main,
-  boxShadow: theme.customShadows.primary,
-  '&:hover': {
-    backgroundColor: theme.palette.primary.darker,
-  },
-}));
 
 const openedMixin = (theme) => ({
   width: SIDEBAR_WIDTH,
@@ -63,17 +31,10 @@ const closedMixin = (theme) => ({
   },
 });
 
-// ----------------------------------------------------------------------
-
 
 
 export default function ChatSidebar() {
   const theme = useTheme();
-
-  const navigate = useNavigate();
-
-  const { pathname } = useLocation();
-
   const [openSidebar, setOpenSidebar] = useState(true);
 
   const isDesktop = useMediaQuery(theme => theme.breakpoints.up('md'));
@@ -147,6 +108,8 @@ const DrawerContent = ({ isCollapse, openSidebar, setOpenSidebar }) => {
             </IconButton>
           )}
         </Stack>
+
+        <ConversationsMenu/>
       </Box>
 
    
