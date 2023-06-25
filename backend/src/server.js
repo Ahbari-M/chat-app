@@ -53,6 +53,7 @@ io.use(async (socket, next) => {
         const userName = verifyToken(socket.handshake.auth.token);
         USERS[userName] = {socket, rooms: []};
         socket.broadcast.emit('online-users',{users: Object.keys(USERS)}); 
+        socket.emit('online-users', { users: Object.keys(USERS) }); 
         console.log(`${userName} has connected `);
         next();
     } catch (error) {
@@ -63,11 +64,11 @@ io.use(async (socket, next) => {
 
 io.on('connection', socket => {
     const userName = verifyToken(socket.handshake.auth.token);
-    socket.emit('online-users', { users: Object.keys(USERS) }); 
     
     socket.on('new-chat', (chatUsers, callback) => {
         let room = {}
         if (chatUsers.length === 1) {
+            if(!USERS[chatUsers[0]]) return
             const id = USERS[chatUsers[0]].socket.id;
             room = {id , people: [userName,...chatUsers]};
             if (USERS[userName].rooms.findIndex(r => r.id === id) !== -1) {
