@@ -2,8 +2,8 @@ import { Card, Container } from '@mui/material'
 import React from 'react'
 import ChatSidebar from '../components/ChatSidebar'
 import ChatWindow from '../components/ChatWindow'
-import { SocketProvider } from '../contexts/SocketContext'
 import useSocket from '../hooks/useSocket'
+import { Outlet } from 'react-router-dom'
 
 function Chat() {
   const chat = useSocket() 
@@ -14,7 +14,9 @@ function Chat() {
       <Container>
         <Card sx={{ height: '72vh', display: 'flex', mt:6 }}>
           <ChatSidebar />
-          <ChatWindow />
+          <ChatWindow>
+            <Outlet />
+          </ChatWindow>
         </Card>
       </Container>
   )
