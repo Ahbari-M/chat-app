@@ -2,13 +2,22 @@
   "name": "chat-app",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
     "build": "tsc",
     "dev": "npx nodemon ./src/index.ts"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ext": "ts, html",
+    "ignore": [
+      "src/public"
+    ],
+    "exec": "npx ts-node -r tsconfig-paths/register ./src/index.ts"
   },
   "keywords": [],
   "author": "",

@@ -1,4 +1,4 @@
-import config from "../config.js";
+import config from "../config";
 import jwt from 'jsonwebtoken'
 
 export function verifyToken(authorization: string | undefined) {
