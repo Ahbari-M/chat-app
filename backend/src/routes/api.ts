@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import userRouter from './userRouter.js'
+import userRouter from './userRouter'
 
 // Export the base-router
 const baseRouter = Router();

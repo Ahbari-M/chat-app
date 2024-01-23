@@ -1,8 +1,9 @@
 import bcrypt from 'bcrypt';
+import { UserDto } from '../DTOs/UserDtos';
 
-const users = []
+const users: UserDto[] = []
 
-async function signup(data) {
+async function signup(data: UserDto) {
   const user = {
       userName: data.userName,
       password: bcrypt.hashSync(data.password, 8),
@@ -18,7 +19,7 @@ async function signup(data) {
 }
 
 
-async function signin(data) {
+async function signin(data: UserDto) {
   const user = users.find(u => u.userName === data.userName)
   
   if (!user) {
@@ -38,7 +39,7 @@ async function getAll() {
   return users.map(user => ({userName: user.userName}))
 }
 
-async function getUser(userName) { 
+async function getUser(userName: string) { 
   const user = users.find(u => u.userName === userName)
   
   if (!user) {

@@ -1,6 +1,6 @@
+import { Response } from "express";
 
-
-export default function handleError(err, req, res, next) {
+export default function handleError(err: any, req: any , res: Response, next: any) {
     if (typeof (err) === 'string') {
         console.log(err)
         // custom application error

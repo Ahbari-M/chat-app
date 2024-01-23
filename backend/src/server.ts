@@ -1,14 +1,17 @@
+import * as dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: path.join(__dirname, "/.env") });
+
 import express from 'express'
 import http from 'http' 
 import { Server } from 'socket.io'
 import cors from 'cors';
-import router from './routes/api.js';
+import router from './routes/api';
 import {expressjwt} from 'express-jwt'
-import handleError from './shared/handleError.js';
-import config from './config.js';
-import jwt from 'jsonwebtoken';
+import handleError from './shared/handleError';
+import config from './config';
 import { v4 as uuid } from 'uuid';
-import { verifyToken } from './shared/jwt.js';
+import { verifyToken } from './shared/jwt';
 
 const {secret} = config
 const app = express()
@@ -46,7 +49,21 @@ app.use(expressjwt({ secret, algorithms: ['HS256'] }).unless({
 // routes
 app.use('/api', router)
 
-const USERS = {}
+interface IUser {
+    socket: any,
+    rooms: any[]
+}
+
+interface IUsers {
+    [key: string]: IUser
+}
+
+interface IRoom {
+    id: string,
+    people: string[]
+}
+
+const USERS: IUsers= {}
 
 io.use(async (socket, next) => {
     try {
@@ -55,9 +72,10 @@ io.use(async (socket, next) => {
         socket.broadcast.emit('online-users',{users: Object.keys(USERS)}); 
         socket.emit('online-users', { users: Object.keys(USERS) }); 
         console.log(`${userName} has connected `);
+        console.log({USERS})
         next();
-    } catch (error) {
-        console.log({err: error.message})
+    } catch (error: any) {
+        console.log({err: error?.message})
         next(new Error("invalid token"));
     }
 })
@@ -65,8 +83,8 @@ io.use(async (socket, next) => {
 io.on('connection', socket => {
     const userName = verifyToken(socket.handshake.auth.token);
     
-    socket.on('new-chat', (chatUsers, callback) => {
-        let room = {}
+    socket.on('new-chat', (chatUsers: string[] , callback) => {
+        let room: IRoom;
         if (chatUsers.length === 1) {
             if(!USERS[chatUsers[0]]) return
             const id = USERS[chatUsers[0]].socket.id;
@@ -98,7 +116,7 @@ io.on('connection', socket => {
         USERS[userName]?.rooms.forEach(room => {
             socket.to(room.id).emit('chat-message', { message: userName+'user discnnected', name: 'app', room })
         })
-        USERS[userName] = undefined
+        delete USERS[userName];
         socket.broadcast.emit('online-users',{users: Object.keys(USERS)});
     })
 

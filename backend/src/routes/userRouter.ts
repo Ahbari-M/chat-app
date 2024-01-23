@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import jwt, { verify } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import StatusCodes from 'http-status-codes';
-import userService from '../services/userService.js';
-import config from '../config.js'
-import { verifyToken } from '../shared/jwt.js';
+import userService from '../services/userService';
+import config from '../config'
+import { verifyToken } from '../shared/jwt';
 
 const router = Router()
 const { CREATED, OK } = StatusCodes;
